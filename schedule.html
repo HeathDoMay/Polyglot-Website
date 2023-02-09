@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>            
+        <title>Programming Polyglot</title>
+        <link rel='stylesheet' href='style.css'>
+    </head>
+    <body>
+        <h1>Programming Polyglot</h1>
+
+        <hr/>
+
+        <div  class='row'>
+            <div class='col-2'>
+                <label>Course Number Level</label>
+            </div>
+            <div class='col-10'>
+                <select id='level'>
+                    <option value=''></option>
+                    <option value='100'>100</option>
+                    <option value='200'>200</option>
+                    <option value='300'>300</option>
+                    <option value='400'>400</option>
+                </select>
+            </div>
+        </div>
+
+        <div class='row'>
+            <div class='col-2'>
+                <label>Course Instructor</label>
+            </div>
+            <div class='col-10'>
+                <input id='instructor' type='text' />
+            </div>
+        </div>
+        
+        <div class='row'>
+            <div class='col-2'>
+                <label>Exclude GIMM Courses?</label>
+            </div>
+            <div class='col-10'>
+                <input id='gimm' type='checkbox' />
+            </div>
+        </div>
+
+        <div  class='row'>
+            <div class='col-2'>
+                <label>Sort By Course Number</label>
+            </div>
+            <div class='col-10'>
+                <select id='sort'>
+                    <option value=''></option>
+                    <option value='ASC'>Ascending</option>
+                    <option value='DESC'>Descending</option>
+                </select>
+            </div>
+        </div>
+
+        <div  class='row'>
+            <div class='col-2'>
+                <label>Limit Number of Rows?</label>
+            </div>
+            <div class='col-10'>
+                <select id='limit'>
+                    <option value=''></option>
+                    <option value='5'>Limit to 5</option>
+                    <option value='4'>Limit to 4</option>
+                    <option value='3'>Limit to 3</option>
+                    <option value='2'>Limit to 2</option>
+                    <option value='1'>Limit to 1</option>
+                </select>
+            </div>
+        </div>
+
+        <div class='row'>
+            <div class='col-12'>
+                <button id='search'>Search for Classes</button>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div id='classes' class='overflow'>
+            Courses go here.
+        </div>
+
+        <script>
+            const isEmpty = (obj) => Object.keys(obj).length === 0;
+
+            document.getElementById('search').addEventListener('click', (event) => {
+                const formData = new FormData();
+
+                if (document.querySelector('#gimm:checked')) {
+                    formData.append('gimm', 0);
+                }
+                if (document.getElementById('instructor').value.length !== 0) {
+                    formData.append('instructor', document.getElementById('instructor').value);
+                }
+                if (document.getElementById('level').value.length !== 0) {
+                    formData.append('level', document.getElementById('level').value);
+                }
+                if (document.getElementById('sort').value.length !== 0) {
+                    formData.append('sort', document.getElementById('sort').value);
+                }
+                if (document.getElementById('limit').value.length !== 0) {
+                    formData.append('limit', document.getElementById('limit').value);
+                }
+
+                //Settings for FETCH API request
+                let fetchSettings = {
+                    method: 'POST',
+                    body: formData
+                };
+
+                //Send FETCH API request
+                fetch("http://localhost/", fetchSettings)
+                    .then((response) => {
+                        return new Promise((resolve) => response.json()
+                            .then((json) => resolve({
+                                status: response.status,
+                                json,
+                            })
+                        ));
+                    })
+                    //Logic to display errors on form 
+                    .then(({status, json}) => {
+                        if (status === 200) {
+                            let displayTable = '<table>' +
+                                            '<thead>' +
+                                                '<tr>' +
+                                                    '<th width="33%">Major</th>' +
+                                                    '<th width="33%">Number</th>' +
+                                                    '<th width="33%">Instructor</th>' + 
+                                                '</tr>' +
+                                            '</thead>' +
+                                            '<tbody>';
+                            if (typeof json.data !== 'undefined') {
+                                for (row of json.data) {
+                                    displayTable += '<tr>' +
+                                        '<td>' + row.major + '</td>' +
+                                        '<td>' + row.number + '</td>' +
+                                        '<td>' + row.professor + '</td>' +
+                                    '</tr>';
+                                }
+                            }
+                            displayTable += '</tbody></table>';
+                            document.getElementById('classes').innerHTML = displayTable;  
+                        } 
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                return;
+            });               
+        </script>
+    </body>
+</html>
