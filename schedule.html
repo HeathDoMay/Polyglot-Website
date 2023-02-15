@@ -12,31 +12,33 @@
 
         <div  class='row'>
             <div class='col-2'>
-                <label>Course Number Level</label>
+                <label>Type System</label>
             </div>
             <div class='col-10'>
-                <select id='level'>
+                <select id='type'>
                     <option value=''></option>
-                    <option value='100'>100</option>
-                    <option value='200'>200</option>
-                    <option value='300'>300</option>
-                    <option value='400'>400</option>
+                    <option value='Static'>Static</option>
+                    <option value='Dynamic'>Dynamic</option>
                 </select>
             </div>
         </div>
 
-        <div class='row'>
+        <div  class='row'>
             <div class='col-2'>
-                <label>Course Instructor</label>
+                <label>Interpreted or Compiled</label>
             </div>
             <div class='col-10'>
-                <input id='instructor' type='text' />
+                <select id='intcom'>
+                    <option value=''></option>
+                    <option value='Interpreted'>Interpreted</option>
+                    <option value='Compiled'>Compiled</option>
+                </select>
             </div>
         </div>
         
         <div class='row'>
             <div class='col-2'>
-                <label>Exclude GIMM Courses?</label>
+                <label>Exclude JavaScript?</label>
             </div>
             <div class='col-10'>
                 <input id='gimm' type='checkbox' />
@@ -45,7 +47,7 @@
 
         <div  class='row'>
             <div class='col-2'>
-                <label>Sort By Course Number</label>
+                <label>Sort By Year Released</label>
             </div>
             <div class='col-10'>
                 <select id='sort'>
@@ -74,14 +76,14 @@
 
         <div class='row'>
             <div class='col-12'>
-                <button id='search'>Search for Classes</button>
+                <button id='search'>Search for Languages</button>
             </div>
         </div>
 
         <hr/>
 
-        <div id='classes' class='overflow'>
-            Courses go here.
+        <div id='languages' class='overflow'>
+            Languages go here.
         </div>
 
         <script>
@@ -91,13 +93,13 @@
                 const formData = new FormData();
 
                 if (document.querySelector('#gimm:checked')) {
-                    formData.append('gimm', 0);
+                    formData.append('javascript', 0);
                 }
-                if (document.getElementById('instructor').value.length !== 0) {
-                    formData.append('instructor', document.getElementById('instructor').value);
+                if (document.getElementById('type').value.length !== 0) {
+                    formData.append('type', document.getElementById('type').value);
                 }
-                if (document.getElementById('level').value.length !== 0) {
-                    formData.append('level', document.getElementById('level').value);
+                if (document.getElementById('intcom').value.length !== 0) {
+                    formData.append('intcom', document.getElementById('intcom').value);
                 }
                 if (document.getElementById('sort').value.length !== 0) {
                     formData.append('sort', document.getElementById('sort').value);
@@ -113,7 +115,7 @@
                 };
 
                 //Send FETCH API request
-                fetch("http://localhost/", fetchSettings)
+                fetch("https://localhost/", fetchSettings)
                     .then((response) => {
                         return new Promise((resolve) => response.json()
                             .then((json) => resolve({
@@ -128,23 +130,29 @@
                             let displayTable = '<table>' +
                                             '<thead>' +
                                                 '<tr>' +
-                                                    '<th width="33%">Major</th>' +
-                                                    '<th width="33%">Number</th>' +
-                                                    '<th width="33%">Instructor</th>' + 
+                                                    '<th width="33%">Name</th>' +
+                                                    '<th width="33%">Abstraction Level</th>' +
+                                                    '<th width="33%">Type System</th>' + 
+                                                    '<th width="33%">Interpreted or Compiled</th>' +
+                                                    '<th width="33%">Paradigms</th>' +
+                                                    '<th width="33%">Year Released</th>' +
                                                 '</tr>' +
                                             '</thead>' +
                                             '<tbody>';
                             if (typeof json.data !== 'undefined') {
                                 for (row of json.data) {
                                     displayTable += '<tr>' +
-                                        '<td>' + row.major + '</td>' +
-                                        '<td>' + row.number + '</td>' +
-                                        '<td>' + row.professor + '</td>' +
+                                        '<td>' + row.name + '</td>' +
+                                        '<td>' + row.abstraction_level + '</td>' +
+                                        '<td>' + row.type_system + '</td>' +
+                                        '<td>' + row.interpreted_compiled + '</td>' +
+                                        '<td>' + row.paradigms + '</td>' +
+                                        '<td>' + row.year + '</td>' +
                                     '</tr>';
                                 }
                             }
                             displayTable += '</tbody></table>';
-                            document.getElementById('classes').innerHTML = displayTable;  
+                            document.getElementById('languages').innerHTML = displayTable;  
                         } 
                     })
                     .catch(error => {

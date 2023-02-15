@@ -1,3 +1,8 @@
+SELECT ProgrammingTypes.id, ProgrammingTypes.type, ProgrammingPolyglot.type_id, ProgrammingPolyglot.name, ProgrammingPolyglot.abstraction_level, ProgrammingPolyglot.interpreted_compiled, ProgrammingPolyglot.paradigms, ProgrammingPolyglot.year
+FROM ProgrammingTypes 
+INNER JOIN ProgrammingPolyglot ON ProgrammingTypes.id = ProgrammingPolyglot.type_id;
+
+
 -- phpMyAdmin SQL Dump
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
